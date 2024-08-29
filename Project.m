@@ -1,5 +1,8 @@
 %% Q1
+% ---------------------------------------------------------------------- %
 clearvars; clc; close all;
+% ---------------------------------------------------------------------- %
+
 % Define polygons via vertices in cc order (original == without rotation)
 FrameA  = repmat([4 24], [4, 1]);
 FrameB1 = repmat([0 18], [4, 1]);
@@ -37,14 +40,16 @@ for slice=1:32
             "DisplayName", "$\hat {y}_A$", "MaxHeadSize", 1)
         maxx = max([CB(:,1); B1(:,1); A_featured(:,1)]); minx = min([CB(:,1); B1(:,1); A_featured(:,1)]); 
         xlim([minx-1, maxx+1]);
-        maxy = max([CB(:,2); B1(:,2); A_featured(:,2)]); miny = min([CB(:,2); B1(:,2); A_featured(:,2)]);
         axis equal; grid on; legend("Location","eastoutside")
     end
 end
 
 
 %% Q2
+% ---------------------------------------------------------------------- %
 clearvars; clc; close all;
+% ---------------------------------------------------------------------- %
+
 % redefine obstacles in world frame
 B1 = [0 18; 10 18; 10 19; 0 19];
 B2 = [17 17; 18 17; 18 29; 17 29];
@@ -83,22 +88,34 @@ for obst_inx=1:length(B_All)
     end
 end
 
-% Plot all obstacles for 32nd slice
-figure(slice); hold on; box on; axis equal; grid on; legend('show');
-set(groot, 'defaultTextInterpreter', 'latex');
-set(groot, 'defaultLegendInterpreter', 'latex');
-set(gcf, "Color", "w")
-% convert index of obstacles to their real names
+% Plot all obstacles for selected slices
+% function to convert index of obstacles to their real names
 obst_inx_to_cobst = @(n)(n*(n<=7)+(0.1)*(n==8)+0.2*(n==9)+0.3*(n==10)+0.4*(n==11));
-
-for obst_inx=1:length(B_All)
-    CB = CB_Combined{obst_inx, 10};
-    cobst = replace(string(obst_inx_to_cobst(obst_inx)), ".", ""); % name CB01 instead of CB0.1
-    fill(B_All{obst_inx}(:,1), B_All{obst_inx}(:,2), 'black', 'FaceAlpha', 0.4, 'HandleVisibility','off') % 'DisplayName', 'B' + string(obst_inx)); % Polygon B
-    plot(CB(:,1), CB(:,2), 'DisplayName', '$CB$'+ cobst, 'LineWidth', 1, 'LineStyle','-.'); % CB 
+for slice=[1, 8, 16, 32]
+    createStandardPlot(slice, thetas(slice)); % custom function for standard plotting
+    for obst_inx=1:length(B_All)
+        CB = CB_Combined{obst_inx, slice};
+        cobst = replace(string(obst_inx_to_cobst(obst_inx)), ".", ""); % name CB01 instead of CB0.1
+        fill(B_All{obst_inx}(:,1), B_All{obst_inx}(:,2), 'black', 'FaceAlpha', 0.4, 'HandleVisibility','off') % 'DisplayName', 'B' + string(obst_inx)); % Polygon B
+        plot(CB(:,1), CB(:,2), 'DisplayName', '$CB$'+ cobst, 'LineWidth', 1, 'LineStyle','-.'); % CB 
+    end
+    axis equal; grid minor; legend("Location","eastoutside")
 end
-axis equal; grid minor; legend("Location","eastoutside")
+
+% % add the robot to the plot in some configuration
+% CB_Featured = CB_Combined{6, slice};
+% FrameFeature = repmat([CB_Featured(1,1), CB_Featured(1,2)], [4 1]);
+% Robot_featured = Robot - FrameA + FrameFeature; % move robot origin to some point on CB
+% Robotx_ax = R*[1; 0]; Roboty_ax = R*[0; 1];
+% fill(Robot_featured(:,1), Robot_featured(:,2), 'b', 'FaceAlpha', 0.5, 'DisplayName', 'Robot $A$'); % Polygon A
+% quiver(Robot_featured(1,1), Robot_featured(1,2), Robotx_ax(1), Robotx_ax(2), 'c', 'filled', 'LineWidth', 1.5, ...
+%     "DisplayName", "$\hat {x}_A$", "MaxHeadSize", 1, 'HandleVisibility','off')
+% quiver(Robot_featured(1,1), Robot_featured(1,2), Roboty_ax(1), Roboty_ax(2), 'm', 'filled', 'LineWidth', 1.5, ...
+%     "DisplayName", "$\hat {y}_A$", "MaxHeadSize", 1, 'HandleVisibility','off')
 
 %% Q3
+% ---------------------------------------------------------------------- %
+clearvars; clc; close all;
+% ---------------------------------------------------------------------- %
 
 
