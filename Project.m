@@ -115,7 +115,49 @@ end
 
 %% Q3
 % ---------------------------------------------------------------------- %
-clearvars; clc; close all;
+clc; % close all; % to show both Q2 and Q3 on same plots for selected slices
 % ---------------------------------------------------------------------- %
+space_grid = zeros(32,32,32);
 
+% create a set of points to test for in each CB
+test_points = table2array(combinations(linspace(1, 32, 32), linspace(1, 32, 32)));
+% ------------------ NOTICE -------------------- %
+% the test points start at the (1,1) location and end at the (32,32)
+% location. Only these points will be tested, so if a finer resolution is
+% needed this is an issu,e because it was assumed that the test_points
+% indeces are also the (x, y) locations, so one does not simply change the
+% linspace because then it will not be a valid index. 
+% -------------------------------------------- %
+for slice=1:32
+    % fill the grid with ones for obstacles and zeros are by default.
+    for obst_inx=1:length(B_All)
+        % compute for every boundary within given slice all the points in cb
+        CB = CB_Combined{obst_inx, slice};
+        inx_in_cb = inhull(test_points, CB, convhulln(CB), 0); % find the points contained in the CB convex hull of a polygon.
+        xy_in_cb = test_points(inx_in_cb , :);
+        for x=1:32
+            for y=1:32
+                if space_grid(x, y, slice)==0
+                   space_grid(x, y, slice) = 1 * ismember([x, y], xy_in_cb, "rows");
+                end
+            end
+        end
 
+    end
+end
+
+% Mannual override 
+space_grid(:, 31:32, :) = 1; % because it is out of the wall for all thetas.
+space_grid(:, 1, :) = 1; % wall
+space_grid(:, 30, :) = 1; % wall 
+space_grid(1, :, :) = 1; % wall
+space_grid(32, :, :) = 1; % wall
+
+% Plotting
+for slice_to_plot = [1 8 16 32]
+    % add boundaries to exsiting figures
+    createStandardPlot(slice_to_plot, thetas(slice_to_plot)) 
+    [x,y] = find(space_grid(:,:,slice_to_plot) == 1);
+    plot(x,y,'r+', 'HandleVisibility','off')
+    axis equal; grid on; % legend("off") if in separate plots
+end
