@@ -10,4 +10,15 @@ The results are all given in the Part 1 report.
 Main filename:  Part2.m     
 In the second part of the project we created a grid and planned a robot navigation from start to a target (position and orientation)    
 while avoiding the obstacles according to the "Bed_Movers_Problem.pdf".     
-We used BFS, DFS and A* and compared their performance.
+Following is sample slices of the grid with values representing valid positions of the robot CS
+### Grid view sample slice
+![Grid view](assets/slice_32.jpg)   
+
+For the path finding algorithm we used BFS, DFS and A* and compared their performance.
+Following are the path plans for A* and BFS:
+### Breadth-First Search path
+![Breadth-First Search path](assets/bfs_path.jpg)   
+
+### A* path
+![A* path](assets/astar_path.jpg)   
+
